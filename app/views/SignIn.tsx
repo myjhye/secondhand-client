@@ -1,4 +1,6 @@
+import AppButton from "@ui/AppButton";
 import CustomKeyAvoidingView from "@ui/CustomKeyAvoidingView";
+import FormDivider from "@ui/FormDivider";
 import FormInput from "@ui/FormInput";
 import WelcomeHeader from "@ui/WelcomeHeader";
 import { View, StyleSheet } from "react-native";
@@ -19,6 +21,11 @@ export default function SignIn() {
                         placeholder="Password" 
                         secureTextEntry // 입력값 숨기기
                     />
+
+                    <AppButton title="Sign in" />
+
+                    <FormDivider />
+                    
                 </View>
             </View>
         </CustomKeyAvoidingView>
