@@ -1,18 +1,17 @@
-import { StyleSheet, View } from "react-native";
-import SignIn from "@views/SignIn";
+import { Platform, SafeAreaView, StatusBar, StyleSheet, Text } from "react-native";
+import Navigator from "app/navigator";
 
 export default function App() {
   return (
-    <View style={styles.container}>
-        <SignIn />
-    </View>
+    <SafeAreaView style={styles.container}>
+        <Navigator />
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        alignItems: "center",
-        justifyContent: "center",
-    },
+  container: {
+    flex: 1,
+    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
+  },
 });

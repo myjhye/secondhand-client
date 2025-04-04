@@ -29,7 +29,9 @@ export default function SignIn() {
                     
                     <FormNavigator
                         leftTitle="Forget Password" 
-                        rightTitle="Sign Up" 
+                        rightTitle="Sign Up"
+                        onLeftPress={() => console.log("Forget Password pressed")}
+                        onRightPress={() => console.log("Sign Up pressed")} 
                     />
                 </View>
             </View>
