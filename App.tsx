@@ -1,4 +1,4 @@
-import { Platform, SafeAreaView, StyleSheet, StatusBar, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import SignIn from "@views/SignIn";
 
 export default function App() {
