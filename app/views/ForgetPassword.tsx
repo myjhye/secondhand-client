@@ -6,9 +6,9 @@ import FormInput from "@ui/FormInput";
 import FormNavigator from "@ui/FormNavigator";
 import WelcomeHeader from "@ui/WelcomeHeader";
 import { AuthStackParamList } from "app/navigator/AuthNavigator";
-import { View, StyleSheet } from "react-native";
+import { StyleSheet, View } from "react-native";
 
-export default function SignIn() {
+export default function ForgetPassword() {
 
     const { navigate } = useNavigation<NavigationProp<AuthStackParamList>>();
 
@@ -21,29 +21,24 @@ export default function SignIn() {
                     <FormInput
                         placeholder="Email"
                         keyboardType="email-address"
-                        autoCapitalize="none" // 첫 글자 자동 대문자 변환 막기
-                    />
-                    <FormInput 
-                        placeholder="Password" 
-                        secureTextEntry // 입력값 숨기기
+                        autoCapitalize="none"
                     />
 
-                    <AppButton title="Sign in" />
+                    <AppButton title="Request Link" />
 
                     <FormDivider />
-                    
+
                     <FormNavigator
-                        leftTitle="Forget Password" 
-                        rightTitle="Sign Up"
-                        onLeftPress={() => navigate("ForgetPassword")}
-                        onRightPress={() => navigate("SignUp")}
+                        onLeftPress={() => navigate("SignUp")}
+                        onRightPress={() => navigate("SignIn")}
+                        leftTitle="Sign Up"
+                        rightTitle="Sign In"
                     />
                 </View>
             </View>
         </CustomKeyAvoidingView>
     )
 }
-
 
 const styles = StyleSheet.create({
     container: {

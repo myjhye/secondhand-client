@@ -3,7 +3,9 @@
 */
 
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import ForgetPassword from "@views/ForgetPassword";
 import SignIn from "@views/SignIn";
+import SignUp from "@views/SignUp";
 import { StyleSheet } from "react-native";
 
 export type AuthStackParamList = {
@@ -21,6 +23,8 @@ export default function AuthNavigator() {
             screenOptions={{ headerShown: false }}
         >
             <Stack.Screen name="SignIn" component={SignIn} />
+            <Stack.Screen name="SignUp" component={SignUp} />
+            <Stack.Screen name="ForgetPassword" component={ForgetPassword} />
         </Stack.Navigator>
     )
 }
