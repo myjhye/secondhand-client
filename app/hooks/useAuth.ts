@@ -53,6 +53,8 @@ export default function useAuth() {
             client.post("/auth/sign-in", userInfo)
         );
 
+        console.log("signIn API response:", res);
+
         // 5-3. 응답이 있다면 (성공)
         if (res) {
             // 5-3-1. 토큰을 AsyncStorage에 저장
@@ -64,6 +66,9 @@ export default function useAuth() {
                 profile: res.profile, 
                 pending: false 
             }));
+            console.log("Login success, state updated");
+
+            return true;
         } 
 
         // 5-4. 실패 시 로딩 false + 프로필 초기화
@@ -72,6 +77,9 @@ export default function useAuth() {
                 profile: null, 
                 pending: false 
             }));
+            console.log("Login failed, res is null");
+
+            return false;
         }
     }
 
