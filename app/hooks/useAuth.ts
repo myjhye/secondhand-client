@@ -48,6 +48,9 @@ export default function useAuth() {
             pending: true 
         }));
 
+        // 시간 지연 (로딩 애니메이션 보이게)
+        await new Promise((r) => setTimeout(r, 1500));
+
         // 5-2. 서버에 로그인 요청
         const res = await runAxiosAsync<SignInRes>(
             client.post("/auth/sign-in", userInfo)
