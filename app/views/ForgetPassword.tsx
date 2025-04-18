@@ -5,15 +5,48 @@ import FormDivider from "@ui/FormDivider";
 import FormInput from "@ui/FormInput";
 import FormNavigator from "@ui/FormNavigator";
 import WelcomeHeader from "@ui/WelcomeHeader";
+import { emailRegex } from "@utils/validator";
+import client from "app/api/client";
+import { runAxiosAsync } from "app/api/runAxiosAsync";
 import { AuthStackParamList } from "app/navigator/AuthNavigator";
+import { useState } from "react";
 import { StyleSheet, View } from "react-native";
+import { showMessage } from "react-native-flash-message";
 
 export default function ForgetPassword() {
 
+    const [email, setEmail] = useState("");
+    const [busy, setBusy] = useState(false); // 로딩 중 여부
+
     const { navigate } = useNavigation<NavigationProp<AuthStackParamList>>();
 
+    // 1. 제출 버튼 클릭 함수
+    const handleSubmit = async () => {
+
+        // 1-1. 이메일 형식 유효성 검사
+        if (!emailRegex.test(email)) {
+            return showMessage({ message: "Invalid email address!", type: "danger" });
+        }
+
+        // 1-2. 로딩 상태 true 설정
+        setBusy(true);
+
+        // 1-3. 서버에 비밀번호 재설정 요청 전송
+        const res = await runAxiosAsync<{ message: string }>(
+            client.post("/auth/forget-pass", { email })
+        );
+
+        // 1-4. 로딩 상태 해제
+        setBusy(false);
+
+        // 1-5. 응답 메시지 표시 (성공 시)
+        if (res) {
+            showMessage({ message: res.message, type: "success" });
+        }
+    };
+
     return (
-        <CustomKeyAvoidingView>
+        <CustomKeyAvoidingView> {/* 키보드 겹침 방지용 컨테이너 */}
             <View style={styles.innerContainer}>
                 <WelcomeHeader />
 
@@ -22,9 +55,15 @@ export default function ForgetPassword() {
                         placeholder="Email"
                         keyboardType="email-address"
                         autoCapitalize="none"
+                        value={email}
+                        onChangeText={(text) => setEmail(text)}
                     />
 
-                    <AppButton title="Request Link" />
+                    <AppButton
+                        active={!busy}
+                        title={busy ? "Please wait.." : "Request Link"}
+                        onPress={handleSubmit}
+                    />
 
                     <FormDivider />
 
