@@ -14,6 +14,7 @@ export type Profile = {
   name: string;
   verified: boolean;
   avatar?: string;
+  accessToken: string;
 };
 
 // 2. 로그인 관련 상태 구조 정의

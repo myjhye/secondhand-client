@@ -66,7 +66,10 @@ export default function useAuth() {
             
             // 5-3-2. Redux 상태에 사용자 프로필 저장, 로딩 상태 false로 전환
             dispatch(updateAuthState({ 
-                profile: res.profile, 
+                profile: { 
+                    ...res.profile, 
+                    accessToken: res.tokens.access // ✅ 이 줄 추가!
+                }, 
                 pending: false 
             }));
             console.log("Login success, state updated");
