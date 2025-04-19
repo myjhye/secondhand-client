@@ -7,8 +7,8 @@ import colors from "@utils/colors";
 import { StyleSheet } from "react-native";
 import AuthNavigator from "./AuthNavigator";
 import useAuth from "app/hooks/useAuth";
-import AppNavigator from "./AppNavigator";
 import LoadingSpinner from "@ui/LoadingSpinner";
+import TabNavigator from "./TabNavigator";
 
 // 내비게이션의 기본 테마 커스터마이징
 const MyTheme = {
@@ -27,7 +27,7 @@ export default function Navigator() {
         // 앱 전역 내비게이션 컨테이너
         <NavigationContainer theme={MyTheme}>
             <LoadingSpinner visible={authState.pending} />
-            {!loggedIn ? <AuthNavigator /> : <AppNavigator />}
+            {!loggedIn ? <AuthNavigator /> : <TabNavigator />}
         </NavigationContainer>
     )
 }

@@ -10,5 +10,7 @@ export default function Home() {
 }
 
 const styles = StyleSheet.create({
-    container: {},
+    container: {
+        flex: 1, // ← 이거 반드시 필요!
+    },
 });
