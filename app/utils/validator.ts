@@ -73,3 +73,19 @@ export const newUserSchema = yup.object({
 export const signInSchema = yup.object({
     ...emailAndPasswordValidation,
 });
+
+// 6. 새 상품 등록을 위한 유효성 검사 스키마 정의
+export const newProductSchema = yup.object({
+    name: yup.string().required("Product name is missing!"),
+    description: yup.string().required("Product description is missing!"),
+    category: yup.string().required("Product category is missing!"),
+    price: yup
+            .string()
+            .transform((value) => {
+                // 입력된 값이 숫자가 아니면 빈 문자열("")로 변환하여 이후 .required()에서 실패 처리
+                if (isNaN(+value)) return "";
+                return value;
+            })
+        .required("Product price is missing!"),
+    purchasingDate: yup.date().required("Purchasing date is missing!"),
+});

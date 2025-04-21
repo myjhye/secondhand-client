@@ -1,3 +1,7 @@
+/*
+활성 상태에 따라 스타일이 바뀌는 커스텀 버튼
+*/
+
 import colors from "@utils/colors";
 import { StyleSheet, Pressable, Text } from "react-native";
 
