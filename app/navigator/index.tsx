@@ -9,6 +9,7 @@ import AuthNavigator from "./AuthNavigator";
 import useAuth from "app/hooks/useAuth";
 import LoadingSpinner from "@ui/LoadingSpinner";
 import TabNavigator from "./TabNavigator";
+import { useEffect } from "react";
 
 // 내비게이션의 기본 테마 커스터마이징
 const MyTheme = {
@@ -17,6 +18,16 @@ const MyTheme = {
         ...DefaultTheme.colors,
         background: colors.white, // 배경색만 흰색으로 오버라이딩
     },
+};
+
+export type ProfileRes = {
+  profile: {
+    id: string;
+    name: string;
+    email: string;
+    verified: boolean;
+    avatar?: string;
+  };
 };
 
 export default function Navigator() {
