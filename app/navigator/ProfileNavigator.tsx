@@ -1,6 +1,7 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Listings from "@views/Listings";
 import Profile from "@views/Profile";
+import SingleProduct from "@views/SingleProduct";
 import { Product } from "app/store/listings";
 
 export type ProfileNavigatorParamList = {
@@ -21,6 +22,7 @@ export default function ProfileNavigator() {
         <Stack.Navigator screenOptions={{ headerShown: false }}>
             <Stack.Screen name="Profile" component={Profile} />
             <Stack.Screen name="Listings" component={Listings} />
+            <Stack.Screen name="SingleProduct" component={SingleProduct} />
         </Stack.Navigator>
     )
 }
