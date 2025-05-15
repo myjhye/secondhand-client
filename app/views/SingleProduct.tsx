@@ -10,9 +10,9 @@ import colors from "@utils/colors";
 import { runAxiosAsync } from "app/api/runAxiosAsync";
 import useAuth from "app/hooks/useAuth";
 import { ProfileNavigatorParamList } from "app/navigator/ProfileNavigator";
-import { deleteItem } from "app/store/listings";
+import { deleteItem, Product } from "app/store/listings";
 import useClient from "hooks/useClient";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Alert, Pressable, StyleSheet, Text, View } from "react-native";
 import { showMessage } from "react-native-flash-message";
 import { useDispatch } from "react-redux";
@@ -36,10 +36,11 @@ export default function SingleProduct({ route, navigation }: Props) {
 
     const [showMenu, setShowMenu] = useState(false);
     const [busy, setBusy] = useState(false);
+    const [productInfo, setProductInfo] = useState<Product>();
 
     const { authState } = useAuth();
     const { authClient } = useClient();
-    const { product } = route.params;
+    const { product, id } = route.params;
 
     const dispatch = useDispatch();
     const isAdmin = authState.profile?.id === product?.seller.id;
@@ -62,14 +63,33 @@ export default function SingleProduct({ route, navigation }: Props) {
 
     const onDeletePress = () => {
         Alert.alert(
-        "Are you sure?",
-        "This action will remove this product permanently",  
-        [
-            { text: "Delete", style: "destructive", onPress: confirmDelete },
-            { text: "Cancel", style: "cancel" },
-        ]
+            "Are you sure?",
+            "This action will remove this product permanently",  
+            [
+                { text: "Delete", style: "destructive", onPress: confirmDelete },
+                { text: "Cancel", style: "cancel" },
+            ]
         );
-    }
+    };
+
+    const fetchProductInfo = async (id: string) => {
+        const res = await runAxiosAsync<{ product: Product }>(
+            authClient.get("/product/detail/" + id)
+        );
+        if (res) {
+            setProductInfo(res.product);
+        }
+    };
+
+    useEffect(() => {
+        if (id) {
+            fetchProductInfo(id);
+        }
+
+        if (product) {
+            if (product) setProductInfo(product);
+        }
+    }, [id, product]);
 
 
     return (
@@ -81,8 +101,8 @@ export default function SingleProduct({ route, navigation }: Props) {
                 }
             />
             <View style={styles.container}>
-                {product ? (
-                    <ProductDetail product={product} /> 
+                {productInfo ? (
+                    <ProductDetail product={productInfo} /> 
                 ) : (
                     <></> 
                 )}
