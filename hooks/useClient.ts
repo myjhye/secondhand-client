@@ -1,3 +1,6 @@
+/*
+Axios 인증 전용 클라이언트 설정 (authClient) 담당
+*/
 import { baseURL } from "app/api/client";
 import { getAuthState, updateAuthState } from "app/store/auth";
 import axios from "axios";
@@ -11,10 +14,17 @@ const authClient = axios.create({ baseURL });
 
 // 2. 액세스/리프레시 토큰 응답 타입 정의
 export type TokenResponse = {
-    tokens: {
-        refresh: string;
-        access: string;
-    };
+  tokens: {
+    refresh: string;
+    access: string;
+  };
+  profile: {
+    id: string;
+    name: string;
+    email: string;
+    verified: boolean;
+    avatar?: string;
+  };
 };
 
 // 3. 사용자 인증 클라이언트 훅 정의
@@ -30,8 +40,13 @@ const useClient = () => {
     // 6. Axios 요청 인터셉터 설정 (요청 보낼 때 헤더에 Authorization 추가)
     authClient.interceptors.request.use(
         (config) => {
+            // headers가 undefined인 경우 기본 객체로 초기화
+            if (!config.headers) {
+                config.headers = {};
+            }
+
             if (!config.headers.Authorization) {
-                config.headers.Authorization = "Bearer " + token; // Bearer 토큰 설정
+                config.headers.Authorization = "Bearer " + token;
             }
 
             return config;

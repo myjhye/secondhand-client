@@ -9,12 +9,14 @@ import { AppStackParamList } from "app/navigator/AppNavigator";
 import useClient from "hooks/useClient";
 import { useEffect, useState } from "react";
 import { View, StyleSheet, Text, ScrollView } from "react-native";
-import socket from "app/socket";
+import socket, { handleSocketConnection } from "app/socket";
 import useAuth from "app/hooks/useAuth";
+import { useDispatch } from "react-redux";
 
 export default function Home() {
 
     const [products, setProducts] = useState<LatestProduct[]>([]);
+    const dispatch = useDispatch();
 
     const { navigate } = useNavigation<NavigationProp<AppStackParamList>>();
     const { authClient } = useClient();
@@ -30,39 +32,18 @@ export default function Home() {
     }
 
     useEffect(() => {
-        fetchLatestProduct();
-    }, []);
+            fetchLatestProduct();
+        }, []);
 
     // 화면 진입 시 소켓 연결
     useEffect(() => {
-        console.log("accessToken: ", authState.profile?.accessToken);
-
-        // 1. connect_error 먼저 등록
-        socket.on("connect_error", (err) => {
-        console.log("connect_error:", err.message);
-        });
-
-        // 2. 연결 성공 이벤트
-        socket.on("connect", () => {
-        console.log("connected:", socket.connected); // ✅ 연결 성공
-        });
-
-        // 3. 연결 해제 이벤트
-        socket.on("disconnect", () => {
-        console.log("disconnected:", socket.connected);
-        });
-
-        // 4. 토큰 설정 + 연결 시도
-        socket.auth = {
-        token: authState.profile?.accessToken,
-        };
-
-        socket.connect();
-
+        if (authState.profile) handleSocketConnection(authState.profile, dispatch);
         return () => {
         socket.disconnect();
         };
     }, []);
+
+
 
 
 
