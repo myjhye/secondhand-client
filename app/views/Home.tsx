@@ -9,6 +9,7 @@ import { AppStackParamList } from "app/navigator/AppNavigator";
 import useClient from "hooks/useClient";
 import { useEffect, useState } from "react";
 import { View, StyleSheet, Text, ScrollView } from "react-native";
+import socket from "app/socket";
 
 export default function Home() {
 
@@ -29,6 +30,20 @@ export default function Home() {
     useEffect(() => {
         fetchLatestProduct();
     }, []);
+
+    // 예: 화면 진입 시 소켓 연결
+    useEffect(() => {
+    socket.connect();
+
+    socket.on("connect", () => {
+        console.log("[CLIENT] connected to socket server");
+    });
+
+    return () => {
+        socket.disconnect();
+    };
+    }, []);
+
 
     return (
         <>
