@@ -1,4 +1,5 @@
 import AppHeader from "@components/AppHeader";
+import ChatIcon from "@components/ChatIcon";
 import OptionModal from "@components/OptionModal";
 import ProductDetail from "@components/ProductDetail";
 import { AntDesign, Feather } from "@expo/vector-icons";
@@ -12,7 +13,7 @@ import useAuth from "app/hooks/useAuth";
 import { ProfileNavigatorParamList } from "app/navigator/ProfileNavigator";
 import { deleteItem, Product } from "app/store/listings";
 import useClient from "hooks/useClient";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Alert, Pressable, StyleSheet, Text, View } from "react-native";
 import { showMessage } from "react-native-flash-message";
 import { useDispatch } from "react-redux";
@@ -36,6 +37,7 @@ export default function SingleProduct({ route, navigation }: Props) {
 
     const [showMenu, setShowMenu] = useState(false);
     const [busy, setBusy] = useState(false);
+    const [fetchingChatId, setFetchingChatId] = useState(false);
     const [productInfo, setProductInfo] = useState<Product>();
 
     const { authState } = useAuth();
@@ -43,7 +45,7 @@ export default function SingleProduct({ route, navigation }: Props) {
     const { product, id } = route.params;
 
     const dispatch = useDispatch();
-    const isAdmin = authState.profile?.id === product?.seller.id;
+    const isAdmin = productInfo && authState.profile?.id === productInfo.seller.id;
 
     const confirmDelete = async () => {
         const id = product?.id;
@@ -81,6 +83,25 @@ export default function SingleProduct({ route, navigation }: Props) {
         }
     };
 
+    const onChatBtnPress = async () => {
+        if (!productInfo) return;
+
+        setFetchingChatId(true);
+        const res = await runAxiosAsync<{ conversationId: string }>(
+            authClient.get("/conversation/with/" + productInfo.seller.id)
+        );
+        setFetchingChatId(false);
+
+        if (res) {
+            navigation.navigate("ChatWindow", {
+                conversationId: res.conversationId,
+                peerProfile: productInfo.seller,
+            });
+        }
+    };
+
+
+
     useEffect(() => {
         if (id) {
             fetchProductInfo(id);
@@ -107,12 +128,12 @@ export default function SingleProduct({ route, navigation }: Props) {
                     <></> 
                 )}
 
-                <Pressable
-                    onPress={() => navigation.navigate("ChatWindow")}
-                    style={styles.messageBtn}
-                >
-                    <AntDesign name="message1" size={20} color={colors.white} />
-                </Pressable>
+                {!isAdmin && (
+                    <ChatIcon 
+                        onPress={onChatBtnPress} 
+                        busy={fetchingChatId} 
+                    />
+                )}
             </View>
 
             <OptionModal

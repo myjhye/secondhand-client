@@ -1,4 +1,5 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import ChatWindow from "@views/ChatWindow";
 import EditProduct from "@views/EditProduct";
 import Listings from "@views/Listings";
 import Profile from "@views/Profile";
@@ -9,9 +10,21 @@ export type ProfileNavigatorParamList = {
     Profile: undefined;
     Chats: undefined;
     Listings: undefined;
-    SingleProduct: { product?: Product; id?: string };
-    EditProduct: { product: Product };
-    ChatWindow: undefined;
+    SingleProduct: { 
+        product?: Product; 
+        id?: string 
+    };
+    EditProduct: { 
+        product: Product; 
+    };
+    ChatWindow: {
+        conversationId: string;
+        peerProfile: { 
+            id: string; 
+            name: string; 
+            avatar?: string; 
+        };
+    };
 };
 
 
@@ -25,6 +38,7 @@ export default function ProfileNavigator() {
             <Stack.Screen name="Listings" component={Listings} />
             <Stack.Screen name="SingleProduct" component={SingleProduct} />
             <Stack.Screen name="EditProduct" component={EditProduct} />
+            <Stack.Screen name="ChatWindow" component={ChatWindow} />
         </Stack.Navigator>
     )
 }
