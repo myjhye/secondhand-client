@@ -3,6 +3,7 @@ import { FlatList, Modal, Platform, Pressable, SafeAreaView, StatusBar, StyleShe
 import SearchBar from "./SearchBar";
 import colors from "@utils/colors";
 import size from "@utils/size";
+import { useEffect, useState } from "react";
 
 interface Props {
     visible: boolean;
@@ -47,13 +48,40 @@ const searchResults = [
 
 
 export default function SearchModal({ visible, onClose }: Props) {
+    const [keyboardHeight, setKeyboardHeight] = useState(0); // 키보드 높이
+
+    // 뒤로가기 버튼 누를 때 모달 닫기
     const handleClose = () => {
         onClose(!visible)
     }
 
+    useEffect(() => {
+        // 플랫폼에 따라 키보드 이벤트 타입 설정
+        const keyShowEvent = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow'
+        const keyHideEvent = Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide'
+        
+        // 키보드 열릴 때: 키보드 높이 + 여유 여백을 상태에 저장
+        const keyShowListener = Keyboard.addListener(keyShowEvent, (evt) => {
+            setKeyboardHeight(evt.endCoordinates.height + 50)
+        })
+
+        // 키보드 닫힐 때: 높이 0으로 초기화
+        const keyHideListener = Keyboard.addListener(keyHideEvent, (evt) => {
+            setKeyboardHeight(0)
+        })
+
+        // cleanup: 컴포넌트 언마운트 시 이벤트 리스너 제거
+        return () => {
+            keyShowListener.remove();
+            keyHideListener.remove();
+        }
+    })
+
     return (
         <Modal animationType="fade" onRequestClose={handleClose} visible={visible}>
             <SafeAreaView style={styles.container}>
+                
+                {/* 상단 영역: 뒤로가기 버튼 + 검색바 */}
                 <View style={styles.innerContainer}>
                     <View style={styles.header}>
                         <Pressable onPress={handleClose}>
@@ -66,19 +94,21 @@ export default function SearchModal({ visible, onClose }: Props) {
                     </View>
                 </View>
 
-                {/* 제안 */}
-                <FlatList 
-                    data={searchResults}
-                    renderItem={({ item }) => (
-                        <Pressable>
-                            <Text style={styles.suggestionListItem}>
-                                {item.name}
-                            </Text>
-                        </Pressable>
-                    )}
-                    keyExtractor={(item) => item.id.toString()}
-                    contentContainerStyle={styles.suggestionList}
-                /> 
+                {/* 하단 추천 리스트 - 키보드가 올라오면 자동으로 여백 확보 */}
+                <View style={{paddingBottom: keyboardHeight}}>
+                    <FlatList 
+                        data={searchResults}
+                        renderItem={({ item }) => (
+                            <Pressable>
+                                <Text style={styles.suggestionListItem}>
+                                    {item.name}
+                                </Text>
+                            </Pressable>
+                        )}
+                        keyExtractor={(item) => item.id.toString()}
+                        contentContainerStyle={styles.suggestionList}
+                    />
+                </View> 
             </SafeAreaView>
         </Modal>
     )
