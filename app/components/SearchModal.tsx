@@ -4,6 +4,8 @@ import SearchBar from "./SearchBar";
 import colors from "@utils/colors";
 import size from "@utils/size";
 import { useEffect, useState } from "react";
+import EmptyView from "@ui/EmptyView";
+import LottieView from "lottie-react-native";
 
 interface Props {
     visible: boolean;
@@ -11,44 +13,45 @@ interface Props {
 }
 
 const searchResults = [
-  // Electronics
-  { id: 1, name: "Apple iPhone 14 Pro" },
-  { id: 2, name: "Samsung Galaxy S23 Ultra" },
-  { id: 3, name: "Apple iPad Air (5th Gen)" },
-  { id: 4, name: "Sony WF-1000XM5 Wireless Earbuds" },
-  { id: 5, name: "Apple Watch Series 9" },
-  { id: 6, name: "JBL Flip 6 Bluetooth Speaker" },
-  { id: 7, name: "Nintendo Switch OLED" },
-  { id: 8, name: "Canon EOS R10 Mirrorless Camera" },
-  { id: 9, name: "Seagate 2TB External Hard Drive" },
-  { id: 10, name: "Anker PowerCore 10000 Portable Charger" },
-  { id: 11, name: "Logitech MX Master 3S Mouse" },
-  { id: 12, name: "Keychron K2 Mechanical Keyboard" },
-  { id: 13, name: "LG UltraFine 4K Monitor" },
-  { id: 14, name: "Meta Quest 3 VR Headset" },
-  { id: 15, name: "Samsung 55\" QLED Smart TV" },
+    // Electronics
+    { id: 1, name: "Apple iPhone 14 Pro" },
+    { id: 2, name: "Samsung Galaxy S23 Ultra" },
+    { id: 3, name: "Apple iPad Air (5th Gen)" },
+    { id: 4, name: "Sony WF-1000XM5 Wireless Earbuds" },
+    { id: 5, name: "Apple Watch Series 9" },
+    { id: 6, name: "JBL Flip 6 Bluetooth Speaker" },
+    { id: 7, name: "Nintendo Switch OLED" },
+    { id: 8, name: "Canon EOS R10 Mirrorless Camera" },
+    { id: 9, name: "Seagate 2TB External Hard Drive" },
+    { id: 10, name: "Anker PowerCore 10000 Portable Charger" },
+    { id: 11, name: "Logitech MX Master 3S Mouse" },
+    { id: 12, name: "Keychron K2 Mechanical Keyboard" },
+    { id: 13, name: "LG UltraFine 4K Monitor" },
+    { id: 14, name: "Meta Quest 3 VR Headset" },
+    { id: 15, name: "Samsung 55\" QLED Smart TV" },
 
-  // Fashion
-  { id: 16, name: "Nike Air Force 1 Sneakers" },
-  { id: 17, name: "Longchamp Le Pliage Tote Bag" },
-  { id: 18, name: "Levi's Original Trucker Jacket" },
-  { id: 19, name: "Dr. Martens 1460 Leather Boots" },
-  { id: 20, name: "Carhartt Acrylic Watch Beanie" },
-  { id: 21, name: "Ray-Ban Classic Wayfarer Sunglasses" },
-  { id: 22, name: "Daniel Wellington Classic Watch" },
-  { id: 23, name: "Uniqlo UT Graphic T-Shirt" },
-  { id: 24, name: "Adidas Adizero Running Shorts" },
-  { id: 25, name: "Champion Reverse Weave Hoodie" },
-  { id: 26, name: "Burberry Kensington Trench Coat" },
-  { id: 27, name: "Herschel Little America Backpack" },
-  { id: 28, name: "New Era NY Yankees Cap" },
-  { id: 29, name: "Zara Slim Fit Stretch Jeans" },
-  { id: 30, name: "Acne Studios Canada Wool Scarf" },
+    // Fashion
+    { id: 16, name: "Nike Air Force 1 Sneakers" },
+    { id: 17, name: "Longchamp Le Pliage Tote Bag" },
+    { id: 18, name: "Levi's Original Trucker Jacket" },
+    { id: 19, name: "Dr. Martens 1460 Leather Boots" },
+    { id: 20, name: "Carhartt Acrylic Watch Beanie" },
+    { id: 21, name: "Ray-Ban Classic Wayfarer Sunglasses" },
+    { id: 22, name: "Daniel Wellington Classic Watch" },
+    { id: 23, name: "Uniqlo UT Graphic T-Shirt" },
+    { id: 24, name: "Adidas Adizero Running Shorts" },
+    { id: 25, name: "Champion Reverse Weave Hoodie" },
+    { id: 26, name: "Burberry Kensington Trench Coat" },
+    { id: 27, name: "Herschel Little America Backpack" },
+    { id: 28, name: "New Era NY Yankees Cap" },
+    { id: 29, name: "Zara Slim Fit Stretch Jeans" },
+    { id: 30, name: "Acne Studios Canada Wool Scarf" },
 ];
 
 
 export default function SearchModal({ visible, onClose }: Props) {
     const [keyboardHeight, setKeyboardHeight] = useState(0); // 키보드 높이
+    const [busy, setBusy] = useState(false);
 
     // 뒤로가기 버튼 누를 때 모달 닫기
     const handleClose = () => {
@@ -59,7 +62,7 @@ export default function SearchModal({ visible, onClose }: Props) {
         // 플랫폼에 따라 키보드 이벤트 타입 설정
         const keyShowEvent = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow'
         const keyHideEvent = Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide'
-        
+
         // 키보드 열릴 때: 키보드 높이 + 여유 여백을 상태에 저장
         const keyShowListener = Keyboard.addListener(keyShowEvent, (evt) => {
             setKeyboardHeight(evt.endCoordinates.height + 50)
@@ -77,10 +80,24 @@ export default function SearchModal({ visible, onClose }: Props) {
         }
     })
 
+    useEffect(() => {
+        if (visible) {
+            setBusy(true); // 모달 열릴 때 로딩 시작
+
+            // 예시로 1초 후 로딩 끝 처리
+            const timeout = setTimeout(() => {
+                setBusy(false);
+            }, 1000);
+
+            return () => clearTimeout(timeout);
+        }
+    }, [visible]);
+
+
     return (
         <Modal animationType="fade" onRequestClose={handleClose} visible={visible}>
             <SafeAreaView style={styles.container}>
-                
+
                 {/* 상단 영역: 뒤로가기 버튼 + 검색바 */}
                 <View style={styles.innerContainer}>
                     <View style={styles.header}>
@@ -94,9 +111,23 @@ export default function SearchModal({ visible, onClose }: Props) {
                     </View>
                 </View>
 
+                {/* 로딩 애니메이션 */}
+                {busy ? (
+                    <View style={styles.busyIconContainer}>
+                        <View style={styles.busyAnimationSize}>
+                            <LottieView
+                                style={styles.flex1}
+                                autoPlay
+                                loop
+                                source={require("../../assets/loading_2.json")}
+                            />
+                        </View>
+                    </View>
+                ) : null}
+
                 {/* 하단 추천 리스트 - 키보드가 올라오면 자동으로 여백 확보 */}
-                <View style={{paddingBottom: keyboardHeight}}>
-                    <FlatList 
+                <View style={{ paddingBottom: keyboardHeight }}>
+                    <FlatList
                         data={searchResults}
                         renderItem={({ item }) => (
                             <Pressable>
@@ -107,8 +138,9 @@ export default function SearchModal({ visible, onClose }: Props) {
                         )}
                         keyExtractor={(item) => item.id.toString()}
                         contentContainerStyle={styles.suggestionList}
+                        ListEmptyComponent={<EmptyView title="There is no results..." />}
                     />
-                </View> 
+                </View>
             </SafeAreaView>
         </Modal>
     )
@@ -139,5 +171,18 @@ const styles = StyleSheet.create({
         fontWeight: '600',
         paddingVertical: 7,
         fontSize: 18,
+    },
+    busyIconContainer: {
+        flex: 0.3,
+        alignItems: 'center',
+        justifyContent: 'center',
+        opacity: 0.5,
+    },
+    busyAnimationSize: {
+        height: 100,
+        width: 100,
+    },
+    flex1: {
+        flex: 1,
     }
 })
