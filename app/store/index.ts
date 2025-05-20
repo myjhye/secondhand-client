@@ -7,11 +7,13 @@ Redux 스토어를 생성하고 설정
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import authReducer from "./auth";
 import listingReducer from "./listings";
+import conversationReducer from "./conversation"; 
 
 // 1. 여러 slice 리듀서를 하나로 합침
 const reducers = combineReducers({
   auth: authReducer,
   listing: listingReducer,
+  conversation: conversationReducer,
 });
 
 // 2. Redux 스토어 생성

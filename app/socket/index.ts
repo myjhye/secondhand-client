@@ -48,7 +48,9 @@ export const handleSocketConnection = (profile: Profile, dispatch: Dispatch<Unkn
           pending: false,
         }));
 
-        socket.auth = { token: res.tokens.access };
+        socket.auth = { 
+          token: res.tokens.access, 
+        };
         socket.connect(); // 재연결
       }
     }

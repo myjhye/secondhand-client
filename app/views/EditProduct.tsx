@@ -204,6 +204,7 @@ export default function EditProduct({ route }: Props) {
                 behavior={Platform.OS === "ios" ? "padding" : "height"}
                 keyboardVerticalOffset={Platform.OS === "ios" ? 100 : 0} // iOS에서 헤더 높이만큼 올리기
             >
+                <Text style={styles.header}>Edit My Products</Text>
                 <ScrollView
                     keyboardShouldPersistTaps="handled" // ✅ 키보드 닫힘 제어
                 >
@@ -286,6 +287,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: size.padding,
+  },
+  header: {
+    fontSize: 24,
+    fontWeight: "bold",
+    marginBottom: 15,
   },
   title: {
     fontWeight: "600",

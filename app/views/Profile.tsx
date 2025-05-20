@@ -191,12 +191,6 @@ export default function Profile() {
             {/* 프로필 메뉴 항목들 (메시지 / 게시물 / 로그아웃) */}
             <ProfileOptionListItem
                 style={styles.marginBottom}
-                antIconName="message1"
-                title="Messages"
-                onPress={onMessagePress}
-            />
-            <ProfileOptionListItem
-                style={styles.marginBottom}
                 antIconName="appstore-o"
                 title="Your Listings"
                 onPress={onListingPress}

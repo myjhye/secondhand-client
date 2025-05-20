@@ -13,15 +13,18 @@ import { newProductSchema, yupValidate } from "@utils/validator";
 import { useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { showMessage } from "react-native-flash-message";
-import mime from "mime";
 import { runAxiosAsync } from "app/api/runAxiosAsync";
 import useClient from "hooks/useClient";
 import DatePicker from "@ui/DatePicker";
 import CategoryOptions from "@components/CategoryOptions";
 import OptionModal from "@components/OptionModal";
 import LoadingSpinner from "@ui/LoadingSpinner";
+import mime from "mime";
 
-const imageOptions = [{ value: "Remove Image", id: "remove" }];
+const imageOptions = [{ 
+    value: "Remove Image", 
+    id: "remove" 
+}];
 
 export default function NewListing() {
 
@@ -124,6 +127,7 @@ export default function NewListing() {
     return (
         <CustomKeyAvoidingView>
             <View style={styles.container}>
+                <Text style={styles.title}>List My Product</Text>
                 {/* 6-1. 이미지 선택 버튼 */}
                 <View style={styles.imageContainer}>
                     <Pressable
@@ -219,6 +223,11 @@ const styles = StyleSheet.create({
     container: {
         padding: 15,
         flex: 1,
+    },
+    title: {
+        fontSize: 24,
+        fontWeight: "bold",
+        marginBottom: 15,
     },
     imageContainer: { flexDirection: "row" },
         btnTitle: {

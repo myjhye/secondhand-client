@@ -15,6 +15,9 @@ export default function AvatarView({ size = 50, uri, onPress }: Props) {
     const iconContainerSize = size * iconContainerFactor;
     const iconSize = size * iconSizeFactor;
 
+    // uri가 존재하고 빈 문자열이 아닌지 확인
+    const hasValidUri = Boolean(uri && uri.trim && uri.trim().length > 0);
+
     return (
         <Pressable
             onPress={onPress}
@@ -25,10 +28,10 @@ export default function AvatarView({ size = 50, uri, onPress }: Props) {
                     borderRadius: size / 2 
                 },
                 styles.container,
-                !uri && styles.profileIcon,
+                !hasValidUri && styles.profileIcon,
             ]}
         >
-            {uri ? (
+            {hasValidUri ? (
                 <Image 
                     source={{ uri }} 
                     style={styles.flex1} 

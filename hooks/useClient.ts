@@ -1,5 +1,6 @@
 /*
-Axios 인증 전용 클라이언트 설정 (authClient) 담당
+Redux 상태와 AsyncStorage 기반으로 액세스 토큰을 자동 갱신하며, 인증된 Axios 요청을 처리하는 커스텀 훅
+(로그인된 사용자 토큰을 자동으로 헤더에 넣고, 만료되면 리프레시 토큰으로 갱신까지 처리)
 */
 import { baseURL } from "app/api/client";
 import { getAuthState, updateAuthState } from "app/store/auth";
