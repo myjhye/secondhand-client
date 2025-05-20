@@ -52,6 +52,10 @@ export default function Home() {
             <SearchModal 
                 visible={showSearchModal}
                 onClose={setShowSearchModal}
+                onSelectProduct={(id) => {
+                    setShowSearchModal(false); // 모달 닫기
+                    navigate("SingleProduct", { id });
+                }}
             />
         </>
     );

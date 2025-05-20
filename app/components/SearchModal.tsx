@@ -1,63 +1,66 @@
 import { Ionicons } from "@expo/vector-icons";
-import { FlatList, Modal, Platform, Pressable, SafeAreaView, StatusBar, StyleSheet, Text, View, Keyboard } from "react-native";
+import { FlatList, Modal, Platform, Pressable, SafeAreaView, StatusBar, StyleSheet, Text, View, Keyboard, Image } from "react-native";
 import SearchBar from "./SearchBar";
 import colors from "@utils/colors";
 import size from "@utils/size";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import EmptyView from "@ui/EmptyView";
 import LottieView from "lottie-react-native";
+import { runAxiosAsync } from "app/api/runAxiosAsync";
+import useClient from "hooks/useClient";
+import { debounce } from "@utils/helper";
+import { NavigationProp, useNavigation } from "@react-navigation/native";
+import { AppStackParamList } from "app/navigator/AppNavigator";
 
 interface Props {
     visible: boolean;
     onClose(visible: boolean): void;
+    onSelectProduct(id: string): void;
 }
 
-const searchResults = [
-    // Electronics
-    { id: 1, name: "Apple iPhone 14 Pro" },
-    { id: 2, name: "Samsung Galaxy S23 Ultra" },
-    { id: 3, name: "Apple iPad Air (5th Gen)" },
-    { id: 4, name: "Sony WF-1000XM5 Wireless Earbuds" },
-    { id: 5, name: "Apple Watch Series 9" },
-    { id: 6, name: "JBL Flip 6 Bluetooth Speaker" },
-    { id: 7, name: "Nintendo Switch OLED" },
-    { id: 8, name: "Canon EOS R10 Mirrorless Camera" },
-    { id: 9, name: "Seagate 2TB External Hard Drive" },
-    { id: 10, name: "Anker PowerCore 10000 Portable Charger" },
-    { id: 11, name: "Logitech MX Master 3S Mouse" },
-    { id: 12, name: "Keychron K2 Mechanical Keyboard" },
-    { id: 13, name: "LG UltraFine 4K Monitor" },
-    { id: 14, name: "Meta Quest 3 VR Headset" },
-    { id: 15, name: "Samsung 55\" QLED Smart TV" },
+type SearchResult = {
+    id: string;
+    name: string;
+    thumbnail?: string;
+}
 
-    // Fashion
-    { id: 16, name: "Nike Air Force 1 Sneakers" },
-    { id: 17, name: "Longchamp Le Pliage Tote Bag" },
-    { id: 18, name: "Levi's Original Trucker Jacket" },
-    { id: 19, name: "Dr. Martens 1460 Leather Boots" },
-    { id: 20, name: "Carhartt Acrylic Watch Beanie" },
-    { id: 21, name: "Ray-Ban Classic Wayfarer Sunglasses" },
-    { id: 22, name: "Daniel Wellington Classic Watch" },
-    { id: 23, name: "Uniqlo UT Graphic T-Shirt" },
-    { id: 24, name: "Adidas Adizero Running Shorts" },
-    { id: 25, name: "Champion Reverse Weave Hoodie" },
-    { id: 26, name: "Burberry Kensington Trench Coat" },
-    { id: 27, name: "Herschel Little America Backpack" },
-    { id: 28, name: "New Era NY Yankees Cap" },
-    { id: 29, name: "Zara Slim Fit Stretch Jeans" },
-    { id: 30, name: "Acne Studios Canada Wool Scarf" },
-];
+export default function SearchModal({ visible, onClose, onSelectProduct }: Props) {
+    const [keyboardHeight, setKeyboardHeight] = useState(0); // 키보드 여백 조절용
+    const [busy, setBusy] = useState(false); // 로딩 상태
+    const [query, setQuery] = useState(''); // 검색어
+    const [results, setResults] = useState<SearchResult[]>([]); // 검색 결과 목록
 
+    const { authClient } = useClient();
+    const { navigate } = useNavigation<NavigationProp<AppStackParamList>>();
 
-export default function SearchModal({ visible, onClose }: Props) {
-    const [keyboardHeight, setKeyboardHeight] = useState(0); // 키보드 높이
-    const [busy, setBusy] = useState(false);
-
-    // 뒤로가기 버튼 누를 때 모달 닫기
+    // 모달 닫기
     const handleClose = () => {
         onClose(!visible)
     }
 
+    // 검색 API 호출
+    const searchProduct = async (query: string) => {
+        if (query.trim().length >= 3) {
+            const res = await runAxiosAsync<{ results: SearchResult[] }>(
+                authClient.get("/product/search?name=" + query)
+            );
+
+            if (res?.results) {
+                setResults(res.results); // 검색 결과 갱신
+            }
+        }
+    };
+
+    // debounce 처리된 검색 함수 (1초 대기 후 호출)
+    const searchDebounce = useMemo(() => debounce(searchProduct, 1000), [authClient]);
+
+    // 검색어 변경 핸들러
+    const handleChange = (value: string) => {
+        setQuery(value);
+        searchDebounce(value);
+    };
+
+    // 키보드 높이에 따라 하단 여백 조정
     useEffect(() => {
         // 플랫폼에 따라 키보드 이벤트 타입 설정
         const keyShowEvent = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow'
@@ -106,7 +109,10 @@ export default function SearchModal({ visible, onClose }: Props) {
                         </Pressable>
 
                         <View style={styles.searchBar}>
-                            <SearchBar />
+                            <SearchBar 
+                                onChange={handleChange}
+                                value={query}
+                            />
                         </View>
                     </View>
                 </View>
@@ -128,9 +134,15 @@ export default function SearchModal({ visible, onClose }: Props) {
                 {/* 하단 추천 리스트 - 키보드가 올라오면 자동으로 여백 확보 */}
                 <View style={{ paddingBottom: keyboardHeight }}>
                     <FlatList
-                        data={searchResults}
+                        data={results}
                         renderItem={({ item }) => (
-                            <Pressable>
+                            <Pressable 
+                                onPress={() => { 
+                                    onSelectProduct(item.id);
+                                }} 
+                                style={styles.searchResultItem}
+                            >
+                                <Image source={{ uri: item.thumbnail || undefined }} style={styles.thumbnail} />
                                 <Text style={styles.suggestionListItem}>
                                     {item.name}
                                 </Text>
@@ -184,5 +196,12 @@ const styles = StyleSheet.create({
     },
     flex1: {
         flex: 1,
+    },
+    thumbnail: {
+        width: 60,
+        height: 40,
+    },
+    searchResultItem: {
+        flexDirection: "row",
     }
 })

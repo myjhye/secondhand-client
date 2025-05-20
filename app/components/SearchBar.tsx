@@ -2,12 +2,22 @@ import { View, StyleSheet, TextInput, Text, Pressable } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
 import colors from "@utils/colors";
 
-interface Props {
-  asButton?: boolean;
-  onPress?(): void;
-}
+type Props =
+  | {
+      asButton: true;
+      onPress(): void;
+      onChange?: never;
+      value?: never;
+    }
+  | {
+      asButton?: false;
+      onPress?: never;
+      onChange(text: string): void;
+      value: string;
+    };
 
-export default function SearchBar({ asButton, onPress }: Props) {
+
+export default function SearchBar({ asButton, onChange, value, onPress }: Props) {
     return (
         <Pressable onPress={onPress} style={styles.container}>
             <AntDesign name="search1" size={20} color={colors.primary} />
@@ -20,6 +30,8 @@ export default function SearchBar({ asButton, onPress }: Props) {
                 autoFocus 
                 placeholder="Search here..." 
                 style={[styles.textInput, styles.textInputText]} 
+                onChangeText={onChange}
+                value={value}
               />
             )}
         </Pressable>
