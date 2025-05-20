@@ -1,5 +1,5 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import ChatWindow from "@views/ChatWindow";
+import AskAi from "@views/AskAi";
 import EditProduct from "@views/EditProduct";
 import Listings from "@views/Listings";
 import Profile from "@views/Profile";
@@ -25,6 +25,12 @@ export type ProfileNavigatorParamList = {
             avatar?: string; 
         };
     };
+    AskAi: {
+        title: string;
+        price: number;
+        description: string;
+        thumbnail: string;
+    };
 };
 
 
@@ -38,7 +44,7 @@ export default function ProfileNavigator() {
             <Stack.Screen name="Listings" component={Listings} />
             <Stack.Screen name="SingleProduct" component={SingleProduct} />
             <Stack.Screen name="EditProduct" component={EditProduct} />
-            <Stack.Screen name="ChatWindow" component={ChatWindow} />
+            <Stack.Screen name="AskAi" component={AskAi} />
         </Stack.Navigator>
     )
 }

@@ -1,5 +1,4 @@
 import AppHeader from "@components/AppHeader";
-import ChatIcon from "@components/ChatIcon";
 import OptionModal from "@components/OptionModal";
 import ProductDetail from "@components/ProductDetail";
 import { AntDesign, Feather } from "@expo/vector-icons";
@@ -37,7 +36,6 @@ export default function SingleProduct({ route, navigation }: Props) {
 
     const [showMenu, setShowMenu] = useState(false);
     const [busy, setBusy] = useState(false);
-    const [fetchingChatId, setFetchingChatId] = useState(false);
     const [productInfo, setProductInfo] = useState<Product>();
 
     const { authState } = useAuth();
@@ -83,25 +81,6 @@ export default function SingleProduct({ route, navigation }: Props) {
         }
     };
 
-    const onChatBtnPress = async () => {
-        if (!productInfo) return;
-
-        setFetchingChatId(true);
-        const res = await runAxiosAsync<{ conversationId: string }>(
-            authClient.get("/conversation/with/" + productInfo.seller.id)
-        );
-        setFetchingChatId(false);
-
-        if (res) {
-            navigation.navigate("ChatWindow", {
-                conversationId: res.conversationId,
-                peerProfile: productInfo.seller,
-            });
-        }
-    };
-
-
-
     useEffect(() => {
         if (id) {
             fetchProductInfo(id);
@@ -128,12 +107,25 @@ export default function SingleProduct({ route, navigation }: Props) {
                     <></> 
                 )}
 
-                {!isAdmin && (
-                    <ChatIcon 
-                        onPress={onChatBtnPress} 
-                        busy={fetchingChatId} 
-                    />
-                )}
+                <Pressable style={styles.messageBtn}>
+                    <Feather name="message-circle" size={22} color={colors.white} />
+                </Pressable>
+
+                {/* AI 문의 버튼 */}
+                <Pressable
+                    style={styles.aiBtn}
+                    onPress={() =>
+                        navigation.navigate("AskAi", {
+                            title: productInfo?.name || "",
+                            price: Number(productInfo?.price) || 0,
+                            description: productInfo?.description || "",
+                            thumbnail: productInfo?.thumbnail || "",
+                        })
+                    }
+                >
+                <AntDesign name="questioncircleo" size={22} color={colors.white} />
+                </Pressable>
+
             </View>
 
             <OptionModal
@@ -155,6 +147,7 @@ export default function SingleProduct({ route, navigation }: Props) {
                     }
                 }}
             />
+            
 
             <LoadingSpinner visible={busy} />
         </>
@@ -183,6 +176,17 @@ const styles = StyleSheet.create({
     alignItems: "center",
     position: "absolute",
     bottom: 20,
+    right: 20,
+  },
+  aiBtn: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    backgroundColor: colors.primary,
+    justifyContent: "center",
+    alignItems: "center",
+    position: "absolute",
+    bottom: 90, // 메시지 버튼 위에 위치하도록 조정
     right: 20,
   },
 });
