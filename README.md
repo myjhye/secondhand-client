@@ -26,7 +26,7 @@
 
 ## 목차
 - [주요 기능 (Features)](#주요-기능-features)
-- [인프라 및 배포 (Infrastructure & Deployment)](#인프라-및-배포-infrastructure--deployment)
+- [개발 환경 및 실행 구조 (Development Environment & Execution)](#개발-환경-및-실행-구조-development-environment--execution)
 - [기술 스택 (Tech Stack)](#기술-스택-tech-stack)
 - [문제 해결 및 학습 경험 (Troubleshooting & Learnings)](#문제-해결-및-학습-경험-troubleshooting--learnings)
 
